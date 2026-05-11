@@ -29,4 +29,4 @@ jobs:
         env:
           # This maps your GitHub Secret to an Environment Variable the script can read
           GCP_JSON_KEY: ${{ secrets.GCP_JSON_KEY }}
-        run: oil_tire.py
+        run: python oil_tire.py

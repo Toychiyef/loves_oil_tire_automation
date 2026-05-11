@@ -13,18 +13,34 @@ import re
 from datetime import datetime, timedelta
 
 # --- 1. CONFIGURATION ---
-SERVICE_ACCOUNT_INFO = os.environ.get('GCP_JSON_KEY')  
+import os
+import json
+
+# --- 1. CONFIGURATION ---
+# This looks for the Secret we named GCP_JSON_KEY
+SERVICE_ACCOUNT_INFO = os.environ.get('GCP_JSON_KEY')
 SPREADSHEET_KEY = '1Zt-DqXuEnB3ypsg67btFfVXorY6ljCV-XuhcAqRGIh4'
 
 def update_google_sheets(tire_val, oil_val):
     print("Connecting to Google Sheets...")
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_INFO, scopes=scope)
+    
+    # Check if the secret was actually found
+    if not SERVICE_ACCOUNT_INFO:
+        print("ERROR: GCP_JSON_KEY secret not found!")
+        return
+
+    # Parse the JSON string from the environment variable
+    info = json.loads(SERVICE_ACCOUNT_INFO)
+    creds = Credentials.from_service_account_info(info, scopes=scope)
+    
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SPREADSHEET_KEY).sheet1
+    
     now = datetime.now()
     yesterday = now - timedelta(days=1)
     formatted_dt = yesterday.strftime("%m/%d/%Y %H:%M")
+    
     row_to_add = [formatted_dt, tire_val, oil_val]
     sheet.append_row(row_to_add)
     print(f"Spreadsheet updated successfully: {row_to_add}")

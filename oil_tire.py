@@ -13,13 +13,13 @@ import re
 from datetime import datetime, timedelta
 
 # --- 1. CONFIGURATION ---
-SERVICE_ACCOUNT_FILE = 'citifuel-b12d5cccae8f.json' 
+SERVICE_ACCOUNT_INFO = os.environ.get('GCP_JSON_KEY')  
 SPREADSHEET_KEY = '1Zt-DqXuEnB3ypsg67btFfVXorY6ljCV-XuhcAqRGIh4'
 
 def update_google_sheets(tire_val, oil_val):
     print("Connecting to Google Sheets...")
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=scope)
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_INFO, scopes=scope)
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SPREADSHEET_KEY).sheet1
     now = datetime.now()

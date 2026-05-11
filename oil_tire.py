@@ -37,8 +37,13 @@ def update_google_sheets(tire_val, oil_val):
     client = gspread.authorize(creds)
     sheet = client.open_by_key(SPREADSHEET_KEY).sheet1
     
-    now = datetime.now()
+    # Define Uzbekistan Time (UTC +5)
+    uzb_timezone = timezone(timedelta(hours=5))
+    # Get current time in Uzbekistan
+    now = datetime.now(uzb_timezone)
+    # Calculate "yesterday" based on your local time
     yesterday = now - timedelta(days=1)
+    # Format the date/time
     formatted_dt = yesterday.strftime("%m/%d/%Y %H:%M")
     
     row_to_add = [formatted_dt, tire_val, oil_val]
